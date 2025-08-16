@@ -1,5 +1,5 @@
 use macroquad::{
-    color::{BLACK, Color, GREEN, PINK, RED, WHITE},
+    color::{BLACK, Color, GREEN, PINK, RED},
     input::KeyCode,
     window::{Conf, clear_background, next_frame},
 };
@@ -44,13 +44,7 @@ pub async fn game_loop() {
 }
 
 fn get_a_bunch_food() -> Vec<Food> {
-    return vec![
-        random_food(),
-        random_food(),
-        random_food(),
-        random_food(),
-        random_food(),
-    ];
+    return (0..5).map(|_| random_food()).collect();
 }
 
 fn update_snake(snake: &mut Snake) {
@@ -77,12 +71,14 @@ fn update_foods(foods: &mut Vec<Food>, snake: &mut Snake) {
     }
 }
 
+/// Draws any strcut that implements the `Positioned` interface.
 fn draw_entity<T: Positioned>(item: &T, color: Color) {
     let position = item.get_position();
     let size = item.get_size();
     draw(position, size, color);
 }
 
+/// Draws something at the given position.
 fn draw(position: &Position, size: f32, color: Color) {
     macroquad::shapes::draw_rectangle(position.x as f32, position.y as f32, size, size, color);
 }
@@ -91,44 +87,35 @@ fn draw(position: &Position, size: f32, color: Color) {
 fn display_game_over_screen(snake: &Snake) {
     let screen_w = macroquad::window::screen_width();
     let screen_h = macroquad::window::screen_height();
-    let score = snake.tail.len();
 
-    let game_over_text = "GAME OVER";
-    let score_text = format!("Score: {}", score);
-    let restart_text = "Press SPACE to restart";
-    let text_params = macroquad::text::TextParams {
-        font_size: 40,
-        color: WHITE,
-        ..Default::default()
-    };
+    // let text_params = ;
     macroquad::text::draw_text_ex(
-        game_over_text,
+        "GAME OVER",
         screen_w / 2.0 - 100.0,
         screen_h / 2.0 - 30.0,
-        text_params,
+        macroquad::text::TextParams {
+            font_size: 40,
+            ..Default::default()
+        },
     );
 
-    let small_text_params = macroquad::text::TextParams {
-        font_size: 30,
-        color: WHITE,
-        ..Default::default()
-    };
     macroquad::text::draw_text_ex(
-        &score_text,
+        &format!("Score: {}", snake.tail.len()),
         screen_w / 2.0 - 50.0,
         screen_h / 2.0,
-        small_text_params,
+        macroquad::text::TextParams {
+            font_size: 30,
+            ..Default::default()
+        },
     );
 
-    let restart_text_params = macroquad::text::TextParams {
-        font_size: 30,
-        color: WHITE,
-        ..Default::default()
-    };
     macroquad::text::draw_text_ex(
-        restart_text,
+        "Press SPACE to restart",
         screen_w / 2.0 - 160.0,
         screen_h / 2.0 + 20.0,
-        restart_text_params,
+        macroquad::text::TextParams {
+            font_size: 30,
+            ..Default::default()
+        },
     );
 }
